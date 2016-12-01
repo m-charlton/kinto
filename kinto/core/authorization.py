@@ -97,6 +97,7 @@ class AuthorizationPolicy(object):
 
 
 class RouteFactory(object):
+    resource = None
     resource_name = None
     on_collection = False
     required_permission = None
@@ -126,6 +127,7 @@ class RouteFactory(object):
                           hasattr(service, 'viewset') and
                           hasattr(service, 'resource'))
         if is_on_resource:
+            self.resource = service.resource
             self.resource_name = request.current_resource_name
             self.on_collection = getattr(service, "type", None) == "collection"
 
@@ -196,7 +198,7 @@ class RouteFactory(object):
                                                 self.resource_name,
                                                 **matchdict)
                 if object_id == '*':
-                    object_uri = object_uri.replace('%2A', '*')
+                    object_uri = object_uri.replace('%2A', '[a-zA-Z0-9_-]+')
             except KeyError:
                 # Maybe the resource has no single record endpoint.
                 # We consider that object URIs in permissions backend will
